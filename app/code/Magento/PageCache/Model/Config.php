@@ -44,6 +44,8 @@ class Config
 
     const XML_VARNISH_PAGECACHE_DESIGN_THEME_REGEX = 'design/theme/ua_regexp';
 
+    const XML_VARNISH_PAGECACHE_QUERY_PARAM_BLACKLIST = 'system/full_page_cache/varnish/query_param_blacklist';
+
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
@@ -143,6 +145,7 @@ class Config
     public function getVclFile($vclTemplatePath)
     {
         $accessList = $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_ACCESS_LIST);
+        $queryParamBlacklist = $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_QUERY_PARAM_BLACKLIST);
         $designExceptions = $this->_scopeConfig->getValue(
             self::XML_VARNISH_PAGECACHE_DESIGN_THEME_REGEX,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -158,7 +161,8 @@ class Config
             'accessList' => $accessList ? explode(',', $accessList) : [],
             'designExceptions' => $designExceptions ? $this->serializer->unserialize($designExceptions) : [],
             'sslOffloadedHeader' => $sslOffloadedHeader,
-            'gracePeriod' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_GRACE_PERIOD)
+            'gracePeriod' => $this->_scopeConfig->getValue(self::XML_VARNISH_PAGECACHE_GRACE_PERIOD),
+            'queryParamBlacklist' => $queryParamBlacklist ? explode(',', $queryParamBlacklist) : []
         ]);
         return $vclGenerator->generateVcl($version);
     }

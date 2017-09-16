@@ -49,6 +49,14 @@
                             <field id="caching_application">1</field>
                         </depends>
                     </field>
+                    <field id="query_param_blacklist" type="text" translate="label comment" sortOrder="35" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Query Parameter Blacklist</label>
+                        <comment>List of query parameters, separated with ',' that will be stripped from the URL by Varnish. Examples include gclid, which is unique for each click and does not cause the response to vary</comment>
+                        <backend_model>Magento\PageCache\Model\System\Config\Backend\Varnish</backend_model>
+                        <depends>
+                            <field id="caching_application">1</field>
+                        </depends>
+                    </field>
                     <field id="export_button_version4" type="button" sortOrder="35" showInDefault="1" showInWebsite="0" showInStore="0">
                         <label>Export Configuration</label>
                         <frontend_model>Magento\PageCache\Block\System\Config\Form\Field\Export\Varnish4</frontend_model>

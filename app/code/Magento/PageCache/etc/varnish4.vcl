@@ -91,10 +91,8 @@ sub vcl_recv {
         }
     }
 
-    # Remove Google gclid parameters to minimize the cache objects
-    set req.url = regsuball(req.url,"\?gclid=[^&]+$",""); # strips when QS = "?gclid=AAA"
-    set req.url = regsuball(req.url,"\?gclid=[^&]+&","?"); # strips when QS = "?gclid=AAA&foo=bar"
-    set req.url = regsuball(req.url,"&gclid=[^&]+",""); # strips when QS = "?foo=bar&gclid=AAA" or QS = "?foo=bar&gclid=AAA&bar=baz"
+    # Remove blacklisted query params
+    /* {{ query_param_blacklist }} */
 
     # Static files caching
     if (req.url ~ "^/(pub/)?(media|static)/") {

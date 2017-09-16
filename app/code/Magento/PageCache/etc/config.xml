@@ -28,6 +28,7 @@
                     <backend_port>8080</backend_port>
                     <ttl>86400</ttl>
                     <grace_period>300</grace_period>
+                    <query_param_blacklist>gclid</query_param_blacklist>
                 </default>
             </full_page_cache>
         </system>

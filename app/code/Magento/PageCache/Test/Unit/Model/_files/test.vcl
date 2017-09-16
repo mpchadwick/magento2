@@ -13,3 +13,6 @@
 
     grace:
     /* {{ grace_period }} */
+
+    query param blacklist:
+    /* {{ query_param_blacklist }} */

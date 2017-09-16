@@ -47,6 +47,11 @@ class VclGenerator implements VclGeneratorInterface
     private $designExceptions;
 
     /**
+     * @var array
+     */
+    private $queryParamBlacklist;
+
+    /**
      * VclGenerator constructor.
      *
      * @param VclTemplateLocatorInterface $vclTemplateLocator
@@ -64,7 +69,8 @@ class VclGenerator implements VclGeneratorInterface
         $accessList,
         $gracePeriod,
         $sslOffloadedHeader,
-        $designExceptions = []
+        $designExceptions = [],
+        $queryParamBlacklist = []
     ) {
         $this->backendHost = $backendHost;
         $this->backendPort = $backendPort;
@@ -73,6 +79,7 @@ class VclGenerator implements VclGeneratorInterface
         $this->vclTemplateLocator = $vclTemplateLocator;
         $this->sslOffloadedHeader = $sslOffloadedHeader;
         $this->designExceptions = $designExceptions;
+        $this->queryParamBlacklist = $queryParamBlacklist;
     }
 
     /**
@@ -105,7 +112,28 @@ class VclGenerator implements VclGeneratorInterface
             // Apache and Nginx drop all headers with underlines by default.
             '/* {{ ssl_offloaded_header }} */' => str_replace('_', '-', $this->getSslOffloadedHeader()),
             '/* {{ grace_period }} */' => $this->getGracePeriod(),
+            '/* {{ query_param_blacklist }} */' => $this->getQueryParamBlacklist(),
         ];
+    }
+
+    private function getQueryParamBlacklist()
+    {
+        $result = '';
+        $tplLines = [
+            '%sset req.url = regsuball(req.url,"\?%s=[^&]+$",""); # strips when QS = "?%2$s=AAA"%3$s',
+            '%sset req.url = regsuball(req.url,"\?%s=[^&]+&","?"); # strips when QS = "?%2$s=AAA&foo=bar"%3$s',
+            '%sset req.url = regsuball(req.url,"&%s=[^&]+",""); # strips when QS = "?foo=bar&%2$s=AAA" or QS = "?foo=bar&%2$s=AAA&bar=baz"%3$s'
+        ];
+        $i = 0;
+        foreach ($this->queryParamBlacklist as $param) {
+            foreach ($tplLines as $line) {
+                $padding = ++$i === 1 ? '' : '    ';
+                $result .= sprintf($line, $padding, trim($param), "\n");
+            }
+        }
+        $result = rtrim($result, "\n");
+
+        return $result;
     }
 
     /**

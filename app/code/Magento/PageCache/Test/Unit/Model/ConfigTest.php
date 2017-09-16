@@ -108,6 +108,12 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
                         null,
                         120
                     ],
+                    [
+                        \Magento\PageCache\Model\Config::XML_VARNISH_PAGECACHE_QUERY_PARAM_BLACKLIST,
+                        \Magento\Framework\App\Config\ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                        null,
+                        'gclid'
+                    ]
                 ]
             )
         );
@@ -134,7 +140,8 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
             'accessList' =>  explode(',', '127.0.0.1, 192.168.0.1,127.0.0.2'),
             'designExceptions' => [['regexp' => '(?i)pattern', 'value' => 'value_for_pattern']],
             'sslOffloadedHeader' => 'X_Forwarded_Proto: https',
-            'gracePeriod' => 120
+            'gracePeriod' => 120,
+            'queryParamBlacklist' => ['gclid']
         ];
         $vclGeneratorFactory->expects($this->any())
             ->method('create')
@@ -146,7 +153,8 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
                 explode(',', '127.0.0.1,192.168.0.1,127.0.0.2'),
                 120,
                 'X_Forwarded_Proto: https',
-                [['regexp' => '(?i)pattern', 'value' => 'value_for_pattern']]
+                [['regexp' => '(?i)pattern', 'value' => 'value_for_pattern']],
+                ['gclid']
             )));
         $this->config = $objectManager->getObject(
             \Magento\PageCache\Model\Config::class,
